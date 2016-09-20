@@ -19,17 +19,6 @@ app.use(bodyParser.urlencoded({
     extended:true
 }));
 
-app.get('/getUsers', function(req,res){
-    
-    User.find({}).exec(function(err,users){
-        if (err){
-            res.send("Some error occured:" + err);
-        } else {
-            res.json(users);
-        }
-    });
-});
-
 app.post('/adduser', function(req,res){
 
     User.create(req.body,function (err,book){
@@ -41,4 +30,44 @@ app.post('/adduser', function(req,res){
         }
     });
 
+});
+
+app.get('/getAllUsers', function(req,res){
+    
+    User.find({}).exec(function(err,users){
+        if (err){
+            res.send("Some error occured:" + err);
+        } else {
+            res.status(200);
+            res.json(users);
+        }
+    });
+});
+
+app.get('/getUserbyId/:id', function(req, res){
+    User.findOne({
+    _id: req.params.id
+}).exec(function(err,user){
+    if (err) {
+        res.send("Some error occured " + err);
+    } else {
+        console.log("Resp:  "  + user);
+        res.json(user);
+    }
+});
+})
+
+app.put('/updateUser/:id', function(req, res) {
+  User.findOneAndUpdate({
+    _id: req.params.id
+    },
+    { $set: { username: req.body.name }
+  }, {upsert: true}, function(err, user) {
+    if (err) {
+      res.send('error updating ');
+    } else {
+      console.log(user);
+      res.send(user);
+    }
+  });
 });
